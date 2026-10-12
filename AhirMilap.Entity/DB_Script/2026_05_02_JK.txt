@@ -1,0 +1,18 @@
+CREATE  PROCEDURE [dbo].[usp_VerifyOTP]
+@Email nvarchar(200),
+@OTP int,
+@CurrentDT datetime
+AS
+-- exec usp_VerifyOTP 'abc@1232gmail.com','1234','2024-05-18 18:48:15.657'
+BEGIN
+	SET NOCOUNT ON;
+
+	IF EXISTS(SELECT 1 FROM AspNetUsers WHERE (Email = @Email OR PhoneNumber = @Email) AND OTP = @OTP AND OTPExpiry >= @CurrentDT)
+	BEGIN
+		SELECT 1
+	END
+	ELSE IF EXISTS(SELECT 1 FROM AspNetUsers WHERE (Email = @Email OR PhoneNumber = @Email) AND OTP = @OTP)
+	BEGIN
+		SELECT 2
+	END
+END

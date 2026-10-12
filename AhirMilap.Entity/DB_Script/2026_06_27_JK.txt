@@ -1,0 +1,76 @@
+ALTER PROCEDURE [dbo].[usp_GetMessages]  
+(  
+    @ChatRoomId BIGINT,  
+    @PageIndex INT = 1,  
+    @PageSize INT = 50,
+	@LoginProfileId UNIQUEIDENTIFIER
+)  
+AS  
+/*  
+ usp_GetMessages 10  
+*/  
+BEGIN  
+    SET NOCOUNT ON;  
+
+	--Update Is Read flag 
+	UPDATE Messages SET IsRead = 1 
+	WHERE ChatRoomId = @ChatRoomId 
+	AND SenderProfileId <> @LoginProfileId
+	AND IsRead = 0
+  
+	SELECT COUNT(1) AS TotalCount 
+	FROM Messages WITH(NOLOCK) 
+	WHERE ChatRoomId = @ChatRoomId  
+  
+    SELECT  
+        Id,  
+        ChatRoomId,  
+        SenderProfileId,  
+        MessageText,  
+        IsRead,  
+        CreatedOn  
+    FROM Messages WITH(NOLOCK)   
+    WHERE ChatRoomId = @ChatRoomId  
+    ORDER BY Id DESC  
+    OFFSET (@PageIndex - 1) * @PageSize ROWS  
+    FETCH NEXT @PageSize ROWS ONLY;  
+END    
+GO
+ALTER PROCEDURE usp_SendMessage  
+(  
+    @ChatRoomId BIGINT,  
+    @SenderProfileId uniqueidentifier,  
+    @MessageText NVARCHAR(MAX),  
+	@CreatedBy NVARCHAR(450)  
+)  
+AS  
+BEGIN  
+    SET NOCOUNT ON;  
+
+	--Update Is Read flag 
+	UPDATE Messages SET IsRead = 1 
+	WHERE ChatRoomId = @ChatRoomId 
+	AND SenderProfileId <> @SenderProfileId
+	AND IsRead = 0
+  
+    INSERT INTO Messages  
+    (  
+        ChatRoomId,  
+        SenderProfileId,  
+        MessageText,  
+        IsRead,  
+		CreatedBy  
+    )  
+    VALUES  
+    (  
+        @ChatRoomId,  
+        @SenderProfileId,  
+        @MessageText,  
+        0,  
+		@CreatedBy  
+    );  
+  
+    SELECT *  
+    FROM Messages  
+    WHERE Id = SCOPE_IDENTITY();  
+END  

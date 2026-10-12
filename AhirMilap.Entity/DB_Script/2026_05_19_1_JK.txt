@@ -1,0 +1,174 @@
+CREATE or alter PROCEDURE usp_DeleteFirebaseTokenByToken
+    @TokenCsv NVARCHAR(MAX)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DELETE FROM FirebaseToken
+    WHERE FcmToken IN (
+        SELECT TRIM(value)
+        FROM STRING_SPLIT(@TokenCsv, ',')
+    );
+
+	SELECT 1
+END
+GO
+ 
+CREATE TABLE ChatRooms
+(
+    Id BIGINT PRIMARY KEY IDENTITY,
+    Profile1Id uniqueidentifier NOT NULL,
+    Profile2Id uniqueidentifier NOT NULL,
+    CreatedOn DATETIME DEFAULT GETDATE(),
+	CreatedBy NVARCHAR(450)
+)
+GO
+CREATE TABLE Messages
+(
+    Id BIGINT PRIMARY KEY IDENTITY,
+    ChatRoomId BIGINT NOT NULL,
+    SenderProfileId uniqueidentifier NOT NULL,
+    MessageText NVARCHAR(MAX),
+    IsRead BIT DEFAULT 0,
+    CreatedOn DATETIME DEFAULT GETDATE(),
+	CreatedBy NVARCHAR(450)
+)
+Go
+CREATE or alter PROCEDURE usp_SendMessage
+(
+    @ChatRoomId BIGINT,
+    @SenderProfileId uniqueidentifier,
+    @MessageText NVARCHAR(MAX),
+	@CreatedBy NVARCHAR(450)
+)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    INSERT INTO Messages
+    (
+        ChatRoomId,
+        SenderProfileId,
+        MessageText,
+        IsRead,
+		CreatedBy
+    )
+    VALUES
+    (
+        @ChatRoomId,
+        @SenderProfileId,
+        @MessageText,
+        0,
+		@CreatedBy
+    );
+
+    SELECT *
+    FROM Messages
+    WHERE Id = SCOPE_IDENTITY();
+END
+GO
+CREATE or alter PROCEDURE usp_GetMessages
+(
+    @ChatRoomId BIGINT,
+    @PageIndex INT = 1,
+    @PageSize INT = 50
+)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT
+        Id,
+        ChatRoomId,
+        SenderProfileId,
+        MessageText,
+        IsRead,
+        CreatedOn
+    FROM Messages
+    WHERE ChatRoomId = @ChatRoomId
+    ORDER BY Id DESC
+    OFFSET (@PageIndex - 1) * @PageSize ROWS
+    FETCH NEXT @PageSize ROWS ONLY;
+END  
+GO
+CREATE OR ALTER PROCEDURE usp_CreateChatRoom
+(
+    @Profile1Id UNIQUEIDENTIFIER,
+    @Profile2Id UNIQUEIDENTIFIER,
+    @CreatedBy nvarchar(450) = NULL
+)
+AS
+BEGIN
+
+    SET NOCOUNT ON;
+
+    -- CHECK EXISTING ROOM
+    IF EXISTS
+    (
+        SELECT 1
+        FROM ChatRooms
+        WHERE
+        (
+            Profile1Id = @Profile1Id
+            AND Profile2Id = @Profile2Id
+        )
+        OR
+        (
+            Profile1Id = @Profile2Id
+            AND Profile2Id = @Profile1Id
+        )
+    )
+    BEGIN
+
+        SELECT  'exists' AS CreatedBy
+        RETURN;
+    END
+
+    -- CREATE ROOM
+    INSERT INTO ChatRooms
+    (
+        Profile1Id,
+        Profile2Id, 
+        CreatedBy
+    )
+    VALUES
+    (
+        @Profile1Id,
+        @Profile2Id, 
+        @CreatedBy
+    )
+
+    -- RETURN CREATED ROOM
+    SELECT *
+    FROM ChatRooms
+    WHERE Id = SCOPE_IDENTITY()
+
+END 
+
+GO
+ 
+CREATE OR ALTER PROCEDURE usp_GetChatRoom
+(
+    @Profile1Id UNIQUEIDENTIFIER,
+    @Profile2Id UNIQUEIDENTIFIER
+)
+AS
+BEGIN
+
+    SET NOCOUNT ON;
+
+    SELECT TOP 1 *
+    FROM ChatRooms
+    WHERE
+    (
+        Profile1Id = @Profile1Id
+        AND Profile2Id = @Profile2Id
+    )
+    OR
+    (
+        Profile1Id = @Profile2Id
+        AND Profile2Id = @Profile1Id
+    )
+
+END 
+GO

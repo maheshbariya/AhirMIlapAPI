@@ -1,0 +1,54 @@
+CREATE or alter  PROCEDURE [dbo].[usp_VerifyOTP]  
+@Email nvarchar(200),  
+@OTP int,  
+@CurrentDT datetime  
+AS  
+-- exec usp_VerifyOTP 'abc@1232gmail.com','1234','2024-05-18 18:48:15.657'  
+BEGIN  
+ SET NOCOUNT ON;  
+  
+ IF EXISTS(SELECT 1 FROM AspNetUsers WHERE (Email = @Email OR PhoneNumber = @Email) AND OTP = @OTP AND OTPExpiry >= @CurrentDT)  
+ BEGIN  
+	DECLARE @UserId NVARCHAR(450);  
+	SELECT @UserId = Id From AspNetUsers WHERE (Email = @Email OR PhoneNumber = @Email) 
+	DECLARE @Id UNIQUEIDENTIFIER = NULL;   
+    SET @Id = (SELECT TOP 1 Id FROM MatrimonyProfiles WHERE UserId = @UserId)    
+    IF(@Id IS NULL)      
+    BEGIN      
+		SET @Id = NEWID();      
+		DECLARE @ProfileCode NVARCHAR(50);    
+		SET @ProfileCode = (SELECT       
+			CONCAT('AM', FORMAT(      
+			ISNULL(MAX(CAST(SUBSTRING(ProfileCode, 3, LEN(ProfileCode) - 2) AS INT)), 0) + 1,       
+			'0000000')) AS ProfileCode       
+			FROM MatrimonyProfiles WITH(NOLOCK))    
+      
+		INSERT INTO MatrimonyProfiles      
+		(      
+			Id,      
+			UserId,  
+			ProfileCode,  
+			ProfileStep,
+			CreatedBy,
+			CreatedOn
+		)      
+		VALUES      
+		(      
+			@Id,      
+			@UserId,     
+			@ProfileCode,  
+			0,
+			@UserId,
+			@CurrentDT
+		);     
+	END  
+
+    SELECT 1  
+ END  
+ ELSE IF EXISTS(SELECT 1 FROM AspNetUsers WHERE (Email = @Email OR PhoneNumber = @Email) AND OTP = @OTP)  
+ BEGIN  
+  SELECT 2  
+ END  
+END
+ 
+     

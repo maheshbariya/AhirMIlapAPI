@@ -1,0 +1,22 @@
+################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/AhirMilap.DAL/bin
+/AhirMilap.DAL/obj
+/AhirMilap.DTO/bin
+/AhirMilap.DTO/obj
+/AhirMilap.Entity/bin
+/AhirMilap.Entity/obj
+/AhirMilapAPI/Attachment/75cfa3dc-ef7d-4f68-af6b-1e38f41a13ca/Profile
+/AhirMilapAPI/bin
+/AhirMilapAPI/obj
+/AhirMilapAPI/Properties/PublishProfiles
+/.vs/AhirMilapAPI/config
+/.vs
+/AhirMilapAPI/AhirMilapAPI.csproj.user
+
+# Local configuration and secrets
+*.bak
+/AhirMilapAPI/secrets/
+/AhirMilapAPI/CommonService/ahirmilap-firebase-adminsdk.json

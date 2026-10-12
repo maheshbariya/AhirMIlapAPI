@@ -1,0 +1,200 @@
+CREATE TABLE [dbo].[ConnectionUser](
+	[Id] [uniqueidentifier] NOT NULL,
+	[ProfileIdFrom] [uniqueidentifier] NOT NULL,
+	[ProfileIdTo] [uniqueidentifier] NOT NULL,
+	[StatusId] [int] NOT NULL,
+	[CreatedBy] [nvarchar](450) NULL,
+	[CreatedOn] [datetime] NULL,
+	[ModifiedBy] [nvarchar](450) NULL,
+	[ModifiedOn] [datetime] NULL,
+ CONSTRAINT [PK_ConnectionUser] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[ConnectionUser] ADD  CONSTRAINT [DF_ConnectionUser_Id]  DEFAULT (newid()) FOR [Id]
+GO
+
+
+ALTER TABLE [dbo].[ConnectionUser]  WITH CHECK ADD  CONSTRAINT [FK_ConnectionUser_MatrimonyProfiles_From] FOREIGN KEY([ProfileIdFrom])
+REFERENCES [dbo].[MatrimonyProfiles] ([Id])
+GO
+
+
+ALTER TABLE [dbo].[ConnectionUser] CHECK CONSTRAINT [FK_ConnectionUser_MatrimonyProfiles_From]
+GO
+
+
+ALTER TABLE [dbo].[ConnectionUser]  WITH CHECK ADD  CONSTRAINT [FK_ConnectionUser_MatrimonyProfiles_To] FOREIGN KEY([ProfileIdTo])
+REFERENCES [dbo].[MatrimonyProfiles] ([Id])
+GO
+
+
+ALTER TABLE [dbo].[ConnectionUser] CHECK CONSTRAINT [FK_ConnectionUser_MatrimonyProfiles_To]
+GO
+
+
+
+CREATE OR ALTER PROCEDURE [dbo].[usp_SendRequestConnectionUser]
+    @ProfileIdFrom uniqueidentifier,
+    @ProfileIdTo uniqueidentifier,
+    @CreatedOn datetime,
+    @CreatedBy nvarchar(450),
+    @ModifiedOn datetime,
+    @ModifiedBy nvarchar(450)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @Id UNIQUEIDENTIFIER;
+
+    -- Get existing Connection Id
+    SELECT @Id = Id
+    FROM ConnectionUser
+    WHERE ProfileIdFrom = @ProfileIdFrom
+      AND ProfileIdTo = @ProfileIdTo;
+
+    -- If exists then delete
+    IF (@Id IS NOT NULL)
+    BEGIN
+        DELETE FROM ConnectionUser WHERE Id = @Id;
+        SELECT 'Delete' AS CreatedBy
+        RETURN;
+    END
+
+    -- Insert new favorite
+    SET @Id = NEWID();
+
+    INSERT INTO ConnectionUser
+    (
+        Id,
+        ProfileIdFrom,
+        ProfileIdTo,
+        StatusId,
+        CreatedBy,
+        CreatedOn,
+        ModifiedBy,
+        ModifiedOn
+    )
+    VALUES
+    (
+        @Id,
+        @ProfileIdFrom,
+        @ProfileIdTo,
+        1, -- Pending
+        @CreatedBy,
+        @CreatedOn,
+        @ModifiedBy,
+        @ModifiedOn
+    );
+    -- Return inserted record
+    SELECT * FROM ConnectionUser WHERE Id = @Id;
+END
+
+GO
+
+
+
+CREATE OR ALTER PROCEDURE [dbo].[usp_RequestConnectionActionById]
+@Id UNIQUEIDENTIFIER,
+@ActionId INT,
+@ModifiedOn datetime,
+@ModifiedBy nvarchar(450)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF EXISTS(SELECT 1 FROM ConnectionUser WHERE Id = @Id)
+    BEGIN
+        IF(@ActionId = 1) -- Approve Request
+        BEGIN
+            UPDATE ConnectionUser SET 
+            StatusId = 2, -- Approve
+            ModifiedBy = @ModifiedBy,
+            ModifiedOn = @ModifiedOn
+            WHERE Id = @Id
+            SELECT 1 AS Success;
+        END
+        IF(@ActionId = 2) -- Delete Request
+        BEGIN
+            DELETE FROM ConnectionUser WHERE Id = @Id;
+            SELECT 1 AS Success;
+        END
+        ELSE
+        BEGIN
+             SELECT 0 AS Success;
+        END
+    END
+    ELSE
+    BEGIN
+       SELECT 0 AS Success;
+    END 
+END
+
+GO
+
+
+
+CREATE OR ALTER PROCEDURE [dbo].[usp_GetConnectionUsers]
+(
+    @ProfileId UNIQUEIDENTIFIER,
+    @ActionId INT
+)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT
+        C.Id,
+        CASE
+            WHEN @ActionId IN (1,2)
+                THEN C.ProfileIdFrom
+            ELSE
+                C.ProfileIdTo
+        END AS ProfileId,
+
+        CONCAT(M.FirstName,' ',M.LastName) AS FullName,
+        dbo.GetFullFilePath(M.ProfileFilePath) AS ProfileFilePath,
+        M.Occupation,
+        C.CreatedOn,
+        C.StatusId,
+
+        CASE
+            WHEN C.StatusId = 1 THEN 'Pending'
+            WHEN C.StatusId = 2 THEN 'Accepted'
+            ELSE 'No Request'
+        END AS Status
+
+    FROM ConnectionUser C
+    INNER JOIN MatrimonyProfiles M
+        ON (
+              (@ActionId IN (1,2) AND C.ProfileIdFrom = M.Id)
+              OR
+              (@ActionId = 3 AND C.ProfileIdTo = M.Id)
+           )
+
+    WHERE
+          (@ActionId = 1
+            AND C.ProfileIdTo = @ProfileId
+            AND C.StatusId = 1)                           -- Received Requests
+
+       OR (@ActionId = 2
+            AND C.ProfileIdTo = @ProfileId
+            AND C.StatusId = 2)                           -- Accepted Requests
+
+       OR (@ActionId = 3 
+            AND C.ProfileIdFrom = @ProfileId)             -- Sent Requests
+
+    ORDER BY C.ModifiedOn DESC;
+END
+
+GO
+
+
+
+
+ALTER TABLE [dbo].[MatrimonyProfiles]
+ADD IsVerifyAadhaar BIT NOT NULL DEFAULT(1);
+GO

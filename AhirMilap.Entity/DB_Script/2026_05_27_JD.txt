@@ -1,0 +1,137 @@
+﻿ALTER TABLE States
+ADD StateNameGu NVARCHAR(200)
+GO 
+
+ALTER TABLE Districts
+ADD DistrictNameGu NVARCHAR(200)
+GO 
+
+ALTER  PROCEDURE [dbo].[usp_GetStates]
+@Lang NVARCHAR(10) = ''
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	SELECT Id, 
+	 CASE WHEN @Lang = 'gu'
+	THEN StateNameGu 
+	 ELSE StateName END AS Name
+	FROM States 
+	WHERE IsActive = 1  
+	 ORDER BY
+	 CASE WHEN @Lang = 'gu'
+	  THEN StateNameGu 
+	 ELSE StateName 
+	END
+END
+
+GO 
+
+ALTER   PROCEDURE [dbo].[usp_GetDistrictByStateId]
+@StateId int,
+@Lang NVARCHAR(10) = ''
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	SELECT Id, 
+	 CASE WHEN @Lang = 'gu'
+	THEN DistrictNameGu
+	 ELSE DistrictName END AS Name
+	FROM Districts 
+	WHERE StateId = @StateId
+	ORDER BY 
+	 CASE WHEN @Lang = 'gu'
+	THEN DistrictNameGu
+	 ELSE DistrictName
+	END
+END
+
+
+GO
+
+
+UPDATE dbo.States
+SET StateNameGu =
+CASE StateName
+
+WHEN 'ANDHRA PRADESH' THEN N'આંધ્ર પ્રદેશ'
+WHEN 'ASSAM' THEN N'આસામ'
+WHEN 'ARUNACHAL PRADESH' THEN N'અરુણાચલ પ્રદેશ'
+WHEN 'BIHAR' THEN N'બિહાર'
+WHEN 'GUJRAT' THEN N'ગુજરાત'
+WHEN 'HARYANA' THEN N'હરિયાણા'
+WHEN 'HIMACHAL PRADESH' THEN N'હિમાચલ પ્રદેશ'
+WHEN 'JAMMU & KASHMIR' THEN N'જમ્મુ અને કાશ્મીર'
+WHEN 'KARNATAKA' THEN N'કર્ણાટક'
+WHEN 'KERALA' THEN N'કેરળ'
+WHEN 'MADHYA PRADESH' THEN N'મધ્ય પ્રદેશ'
+WHEN 'MAHARASHTRA' THEN N'મહારાષ્ટ્ર'
+WHEN 'MANIPUR' THEN N'મણિપુર'
+WHEN 'MEGHALAYA' THEN N'મેઘાલય'
+WHEN 'MIZORAM' THEN N'મિઝોરમ'
+WHEN 'NAGALAND' THEN N'નાગાલેન્ડ'
+WHEN 'ORISSA' THEN N'ઓડિશા'
+WHEN 'PUNJAB' THEN N'પંજાબ'
+WHEN 'RAJASTHAN' THEN N'રાજસ્થાન'
+WHEN 'SIKKIM' THEN N'સિક્કિમ'
+WHEN 'TAMIL NADU' THEN N'તમિલનાડુ'
+WHEN 'TRIPURA' THEN N'ત્રિપુરા'
+WHEN 'UTTAR PRADESH' THEN N'ઉત્તર પ્રદેશ'
+WHEN 'WEST BENGAL' THEN N'પશ્ચિમ બંગાળ'
+WHEN 'DELHI' THEN N'દિલ્હી'
+WHEN 'GOA' THEN N'ગોવા'
+WHEN 'PONDICHERY' THEN N'પુડુચેરી'
+WHEN 'LAKSHDWEEP' THEN N'લક્ષદ્વીપ'
+WHEN 'DAMAN & DIU' THEN N'દમણ અને દીવ'
+WHEN 'DADRA & NAGAR' THEN N'દાદરા અને નગર હવેલી'
+WHEN 'CHANDIGARH' THEN N'ચંડીગઢ'
+WHEN 'ANDAMAN & NICOBAR' THEN N'અંડમાન અને નિકોબાર'
+WHEN 'UTTARANCHAL' THEN N'ઉત્તરાખંડ'
+WHEN 'JHARKHAND' THEN N'ઝારખંડ'
+WHEN 'CHATTISGARH' THEN N'છત્તીસગઢ'
+
+ELSE StateNameGu
+END
+
+UPDATE dbo.Districts
+SET DistrictNameGu =
+CASE DistrictName
+
+WHEN 'Ahmedabad' THEN N'અમદાવાદ'
+WHEN 'Amreli' THEN N'અમરેલી'
+WHEN 'Anand' THEN N'આણંદ'
+WHEN 'Aravalli' THEN N'અરવલ્લી'
+WHEN 'Banaskantha' THEN N'બનાસકાંઠા'
+WHEN 'Bharuch' THEN N'ભરૂચ'
+WHEN 'Bhavnagar' THEN N'ભાવનગર'
+WHEN 'Botad' THEN N'બોટાદ'
+WHEN 'Chhota Udaipur' THEN N'છોટાઉદેપુર'
+WHEN 'Dahod' THEN N'દાહોદ'
+WHEN 'Dang' THEN N'ડાંગ'
+WHEN 'Devbhoomi Dwarka' THEN N'દેવભૂમિ દ્વારકા'
+WHEN 'Gandhinagar' THEN N'ગાંધીનગર'
+WHEN 'Gir Somnath' THEN N'ગીર સોમનાથ'
+WHEN 'Jamnagar' THEN N'જામનગર'
+WHEN 'Junagadh' THEN N'જૂનાગઢ'
+WHEN 'Kheda' THEN N'ખેડા'
+WHEN 'Kutch' THEN N'કચ્છ'
+WHEN 'Mahisagar' THEN N'મહીસાગર'
+WHEN 'Mehsana' THEN N'મહેસાણા'
+WHEN 'Morbi' THEN N'મોરબી'
+WHEN 'Narmada' THEN N'નર્મદા'
+WHEN 'Navsari' THEN N'નવસારી'
+WHEN 'Panchmahal' THEN N'પંચમહાલ'
+WHEN 'Patan' THEN N'પાટણ'
+WHEN 'Porbandar' THEN N'પોરબંદર'
+WHEN 'Rajkot' THEN N'રાજકોટ'
+WHEN 'Sabarkantha' THEN N'સાબરકાંઠા'
+WHEN 'Surat' THEN N'સુરત'
+WHEN 'Surendranagar' THEN N'સુરેન્દ્રનગર'
+WHEN 'Tapi' THEN N'તાપી'
+WHEN 'Vadodara' THEN N'વડોદરા'
+WHEN 'Valsad' THEN N'વલસાડ'
+
+ELSE DistrictNameGu
+END
+GO

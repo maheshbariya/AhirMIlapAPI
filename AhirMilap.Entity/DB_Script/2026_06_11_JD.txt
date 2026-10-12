@@ -1,0 +1,87 @@
+-- Plans table (admin-managed)
+CREATE TABLE SubscriptionPlans (
+    Id          INT PRIMARY KEY IDENTITY,
+    Name        NVARCHAR(50)   NOT NULL,  -- 'Gold', 'Platinum'
+    GoogleSku   NVARCHAR(100)  NOT NULL,  -- 'matrimony_gold_monthly'
+    Price       DECIMAL(10,2)  NOT NULL,
+    Currency    NVARCHAR(5)    DEFAULT 'INR',
+    DurationDays INT           NOT NULL,  -- 30, 365
+    Features    NVARCHAR(MAX)  NULL,      -- JSON array
+    IsActive    BIT            DEFAULT 1,
+    CreatedBy   NVARCHAR(450)  NOT NULL,
+    CreatedAt   DATETIME2      DEFAULT GETDATE()
+);
+
+-- User subscriptions
+CREATE TABLE UserSubscriptions (
+    Id              BIGINT PRIMARY KEY IDENTITY,
+    ProfileId       UNIQUEIDENTIFIER   NOT NULL,
+    PlanId          INT            NOT NULL,
+    GoogleOrderId   NVARCHAR(200)  NOT NULL,
+    PurchaseToken   NVARCHAR(MAX)  NOT NULL,
+    Status          NVARCHAR(20)   NOT NULL,  -- Active/Expired/Cancelled
+    StartDate       DATETIME2      NOT NULL,
+    ExpiryDate      DATETIME2      NOT NULL,
+    AutoRenew       BIT            DEFAULT 1,
+    LastVerifiedAt  DATETIME2      NULL,
+    CreatedBy   NVARCHAR(450)  NOT NULL,
+    CreatedAt       DATETIME2      DEFAULT GETDATE(),
+    UpdatedBy   NVARCHAR(450)  NOT NULL,
+    UpdatedAt       DATETIME2      DEFAULT GETDATE(),
+    FOREIGN KEY (ProfileId) REFERENCES [dbo].[MatrimonyProfiles](Id),
+    FOREIGN KEY (PlanId) REFERENCES SubscriptionPlans(Id)
+);
+
+
+-- Webhook log (audit trail)
+CREATE TABLE GoogleWebhookLogs (
+    Id          BIGINT PRIMARY KEY IDENTITY,
+    Payload     NVARCHAR(MAX)  NOT NULL,
+    EventType   NVARCHAR(50)   NULL,
+    Processed   BIT            DEFAULT 0,
+    Error       NVARCHAR(MAX)  NULL,
+    ReceivedAt  DATETIME2      DEFAULT GETDATE()
+);
+
+GO
+
+INSERT INTO [dbo].[SubscriptionPlans]
+           ([Name]
+           ,[GoogleSku]
+           ,[Price]
+           ,[Currency]
+           ,[DurationDays]
+           ,[Features]
+           ,[IsActive]
+           ,[CreatedBy]
+           ,[CreatedAt])
+     VALUES
+           ('Free'
+           ,'Test'
+           ,0
+           ,'INR'
+           ,30
+           ,'Free to Use'
+           ,1
+           ,'75CFA3DC-EF7D-4F68-AF6B-1E38F41A13CA'
+           ,GETDATE()),
+           ('Gold'
+           ,'Gold Test'
+           ,999
+           ,'INR'
+           ,30
+           ,'Gold to Use'
+           ,1
+           ,'75CFA3DC-EF7D-4F68-AF6B-1E38F41A13CA'
+           ,GETDATE()),
+           ('Platinum'
+           ,'Platinum Test'
+           ,1499
+           ,'INR'
+           ,30
+           ,'Free to Use'
+           ,1
+           ,'75CFA3DC-EF7D-4F68-AF6B-1E38F41A13CA'
+           ,GETDATE())
+
+GO

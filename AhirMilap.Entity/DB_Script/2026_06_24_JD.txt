@@ -1,0 +1,323 @@
+CREATE OR ALTER PROCEDURE [dbo].[usp_GetDashboardProfileList]
+(
+    @LoginUserId      NVARCHAR(450) = '',
+    @rPageIndex        INT = 1,
+    @rPageSize         INT = 30,
+    @rSearch           NVARCHAR(450) = '',
+
+    @rMinAge           INT = 0,
+    @rMaxAge           INT = 100,
+
+    @rMinHeight        DECIMAL(10,2) = 0.00,
+    @rMaxHeight        DECIMAL(10,2) = 500.00,
+
+    @rEducation        NVARCHAR(450) = '',
+    @rMaritalStatus    NVARCHAR(450) = '',
+    @rProfession       NVARCHAR(450) = '',
+
+    @rMinIncome        DECIMAL(18,2) = 0.00,
+    @rMaxIncome        DECIMAL(18,2) = 999999999.00,
+
+    @rLocation         NVARCHAR(450) = '',
+
+    /*
+        0 = All Profiles
+        1 = Latest Profiles
+        2 = Liked Profiles
+        3 = Favorite Profiles
+    */
+    @rFilterId         INT = 0
+)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -----------------------------------------------------------------------
+    -- VARIABLES
+    -----------------------------------------------------------------------
+    DECLARE @ProfileId UNIQUEIDENTIFIER;
+    DECLARE @Offset INT;
+
+    SET @Offset = (@rPageIndex - 1) * @rPageSize;
+
+    -----------------------------------------------------------------------
+    -- GET LOGIN PROFILE ID
+    -----------------------------------------------------------------------
+    SELECT TOP 1
+        @ProfileId = MP.Id
+    FROM dbo.MatrimonyProfiles MP WITH (NOLOCK)
+    WHERE MP.UserId = @LoginUserId;
+
+    -----------------------------------------------------------------------
+    -- PROFILE NOT FOUND
+    -----------------------------------------------------------------------
+    --IF @ProfileId IS NULL
+    --BEGIN
+    --    SELECT
+    --        CAST(0 AS BIGINT) AS TotalRecords,
+    --        CAST(0 AS BIGINT) AS TotalPages;
+
+    --    RETURN;
+    --END
+
+    -----------------------------------------------------------------------
+    -- TEMP TABLE
+    -----------------------------------------------------------------------
+    IF OBJECT_ID('tempdb..#ProfileData') IS NOT NULL
+        DROP TABLE #ProfileData;
+
+    CREATE TABLE #ProfileData
+    (
+        Id UNIQUEIDENTIFIER,
+        UserId NVARCHAR(450),
+        FirstName NVARCHAR(200),
+        LastName NVARCHAR(200),
+        FullName NVARCHAR(500),
+        Age INT,
+        HeightCm DECIMAL(10,2),
+        HighestEducation NVARCHAR(500),
+        MaritalStatus NVARCHAR(200),
+        Occupation NVARCHAR(500),
+        AnnualIncome DECIMAL(18,2),
+        District NVARCHAR(500),
+        ProfileFilePath NVARCHAR(MAX),
+        ProfileStatus NVARCHAR(100),
+        CreatedOn DATETIME,
+        IsFavorite BIT,
+        IsLiked BIT
+    );
+
+    -----------------------------------------------------------------------
+    -- INSERT DATA
+    -----------------------------------------------------------------------
+    INSERT INTO #ProfileData
+    (
+        Id,
+        UserId,
+        FirstName,
+        LastName,
+        FullName,
+        Age,
+        HeightCm,
+        HighestEducation,
+        MaritalStatus,
+        Occupation,
+        AnnualIncome,
+        District,
+        ProfileFilePath,
+        ProfileStatus,
+        CreatedOn,
+        IsFavorite,
+        IsLiked
+    )
+    SELECT
+        MP.Id,
+        MP.UserId,
+        MP.FirstName,
+        MP.LastName,
+        CONCAT(ISNULL(MP.FirstName,''), ' ', ISNULL(MP.LastName,'')),
+        MP.Age,
+        MP.HeightCm,
+        MP.HighestEducation,
+        MP.MaritalStatus,
+        MP.Occupation,
+        MP.AnnualIncome,
+        MP.District,
+        MP.ProfileFilePath,
+        MP.ProfileStatus,
+        MP.CreatedOn,
+
+        CASE
+            WHEN FU.Id IS NOT NULL THEN 1
+            ELSE 0
+        END AS IsFavorite,
+
+        CASE
+            WHEN LU.Id IS NOT NULL THEN 1
+            ELSE 0
+        END AS IsLiked
+
+    FROM dbo.MatrimonyProfiles MP WITH (NOLOCK)
+
+    LEFT JOIN dbo.FavoriteUser FU WITH (NOLOCK)
+        ON FU.ProfileIdTo = MP.Id
+       AND FU.ProfileIdFrom = @ProfileId
+
+    LEFT JOIN dbo.LikeUser LU WITH (NOLOCK)
+        ON LU.ProfileIdTo = MP.Id
+       AND LU.ProfileIdFrom = @ProfileId
+
+    WHERE
+        MP.UserId <> @LoginUserId
+
+
+        -------------------------------------------------------------------
+        -- BLOCK USERS
+        -------------------------------------------------------------------
+        AND NOT EXISTS
+        (
+            SELECT 1
+            FROM dbo.BlockUser BU WITH (NOLOCK)
+            WHERE BU.ProfileIdFrom = @ProfileId
+              AND BU.ProfileIdTo = MP.Id
+        )
+
+        -------------------------------------------------------------------
+        -- HIDE USERS
+        -------------------------------------------------------------------
+        AND NOT EXISTS
+        (
+            SELECT 1
+            FROM dbo.HideUser HU WITH (NOLOCK)
+            WHERE HU.ProfileIdFrom = @ProfileId
+              AND HU.ProfileIdTo = MP.Id
+        )
+
+        -------------------------------------------------------------------
+        -- REPORT USERS
+        -------------------------------------------------------------------
+        AND NOT EXISTS
+        (
+            SELECT 1
+            FROM dbo.ReportUser RU WITH (NOLOCK)
+            WHERE RU.ProfileIdFrom = @ProfileId
+              AND RU.ProfileIdTo = MP.Id
+        )
+
+        -------------------------------------------------------------------
+        -- SEND REQUEST
+        -------------------------------------------------------------------
+        --AND NOT EXISTS
+        --(
+        --    SELECT 1
+        --    FROM dbo.ConnectionUser CU WITH (NOLOCK)
+        --    WHERE CU.ProfileIdFrom = @ProfileId
+        --      AND CU.ProfileIdTo = MP.Id
+        --)
+
+        -------------------------------------------------------------------
+        -- AGE FILTER
+        -------------------------------------------------------------------
+        AND MP.Age BETWEEN @rMinAge AND @rMaxAge
+
+        -------------------------------------------------------------------
+        -- HEIGHT FILTER
+        -------------------------------------------------------------------
+        AND MP.HeightCm BETWEEN @rMinHeight AND @rMaxHeight
+
+        -------------------------------------------------------------------
+        -- INCOME FILTER
+        -------------------------------------------------------------------
+        AND MP.AnnualIncome BETWEEN @rMinIncome AND @rMaxIncome
+
+        -------------------------------------------------------------------
+        -- EDUCATION FILTER
+        -------------------------------------------------------------------
+        AND
+        (
+            @rEducation = ''
+            OR MP.HighestEducation LIKE '%' + @rEducation + '%'
+        )
+
+        -------------------------------------------------------------------
+        -- MARITAL STATUS FILTER
+        -------------------------------------------------------------------
+        AND
+        (
+            @rMaritalStatus = ''
+            OR MP.MaritalStatus = @rMaritalStatus
+        )
+
+        -------------------------------------------------------------------
+        -- PROFESSION FILTER
+        -------------------------------------------------------------------
+        AND
+        (
+            @rProfession = ''
+            OR MP.Occupation LIKE '%' + @rProfession + '%'
+        )
+
+        -------------------------------------------------------------------
+        -- LOCATION FILTER
+        -------------------------------------------------------------------
+        AND
+        (
+            @rLocation = ''
+            OR MP.District LIKE '%' + @rLocation + '%'
+        )
+
+        -------------------------------------------------------------------
+        -- COMMON SEARCH
+        -------------------------------------------------------------------
+        AND
+        (
+            @rSearch = ''
+            OR
+            (
+                CONCAT(ISNULL(MP.FirstName,''), ' ', ISNULL(MP.LastName,'')) LIKE '%' + @rSearch + '%'
+                OR MP.HighestEducation LIKE '%' + @rSearch + '%'
+                OR MP.Occupation LIKE '%' + @rSearch + '%'
+                OR MP.MaritalStatus LIKE '%' + @rSearch + '%'
+                OR MP.District LIKE '%' + @rSearch + '%'
+            )
+        )
+
+        -------------------------------------------------------------------
+        -- FILTER TYPES
+        -------------------------------------------------------------------
+        AND
+        (
+            @rFilterId = 0
+
+            OR (@rFilterId = 1)
+
+            OR (@rFilterId = 2 AND LU.Id IS NOT NULL)
+
+            OR (@rFilterId = 3 AND FU.Id IS NOT NULL)
+        );
+
+    -----------------------------------------------------------------------
+    -- TOTAL RECORDS
+    -----------------------------------------------------------------------
+    DECLARE @TotalRecords BIGINT;
+
+    SELECT
+        @TotalRecords = COUNT(1)
+    FROM #ProfileData;
+
+    -----------------------------------------------------------------------
+    -- FILTER 1 = LATEST TOP 30
+    -----------------------------------------------------------------------
+    IF @rFilterId = 1
+    BEGIN
+
+        SELECT TOP 30
+            *,
+            @TotalRecords AS TotalRecords,
+            CEILING(CAST(@TotalRecords AS FLOAT) / @rPageSize) AS TotalPages
+        FROM #ProfileData
+        ORDER BY CreatedOn DESC;
+
+    END
+    ELSE
+    BEGIN
+
+        -------------------------------------------------------------------
+        -- OTHER FILTERS WITH PAGINATION
+        -------------------------------------------------------------------
+        SELECT
+            *,
+            @TotalRecords AS TotalRecords,
+            CEILING(CAST(@TotalRecords AS FLOAT) / @rPageSize) AS TotalPages
+        FROM #ProfileData
+
+        ORDER BY NEWID()
+
+        OFFSET @Offset ROWS
+        FETCH NEXT @rPageSize ROWS ONLY;
+
+    END
+
+    DROP TABLE #ProfileData;
+
+END

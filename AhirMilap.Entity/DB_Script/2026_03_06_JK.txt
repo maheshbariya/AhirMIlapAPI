@@ -1,0 +1,28 @@
+CREATE OR ALTER   PROCEDURE [dbo].[usp_GetMessages]
+(
+    @ChatRoomId BIGINT,
+    @PageIndex INT = 1,
+    @PageSize INT = 50
+)
+AS
+/*
+	usp_GetMessages 1
+*/
+BEGIN
+    SET NOCOUNT ON;
+
+	SELECT COUNT(1) AS TotalCount FROM Messages WITH(NOLOCK) WHERE ChatRoomId = @ChatRoomId
+
+    SELECT
+        Id,
+        ChatRoomId,
+        SenderProfileId,
+        MessageText,
+        IsRead,
+        CreatedOn
+    FROM Messages WITH(NOLOCK) 
+    WHERE ChatRoomId = @ChatRoomId
+    ORDER BY Id DESC
+    OFFSET (@PageIndex - 1) * @PageSize ROWS
+    FETCH NEXT @PageSize ROWS ONLY;
+END  

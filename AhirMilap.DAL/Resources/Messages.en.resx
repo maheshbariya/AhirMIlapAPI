@@ -1,0 +1,315 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="BlockedUserNotFound" xml:space="preserve">
+    <value>Blocked user not found.</value>
+  </data>
+  <data name="DataAlreadyExists" xml:space="preserve">
+    <value>Data already exists.</value>
+  </data>
+  <data name="DataDeletedSuccessfully" xml:space="preserve">
+    <value>Data deleted successfully.</value>
+  </data>
+  <data name="DataFetchedSuccessfully" xml:space="preserve">
+    <value>Data fetched successfully.</value>
+  </data>
+  <data name="DataGatedSuccessfully" xml:space="preserve">
+    <value>Data gated successfully.</value>
+  </data>
+  <data name="DataSavedSuccessfully" xml:space="preserve">
+    <value>Data saved successfully.</value>
+  </data>
+  <data name="DeleteRecordAssociated" xml:space="preserve">
+    <value>Your attempt to delete record could not be completed because it is associated with another table.</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Something went wrong.</value>
+  </data>
+  <data name="FavoriteUserDeletedSuccessfully" xml:space="preserve">
+    <value>Favorite user deleted successfully.</value>
+  </data>
+  <data name="FileNotSupported" xml:space="preserve">
+    <value>File type is not supported.</value>
+  </data>
+  <data name="FileSizeExceeded" xml:space="preserve">
+    <value>Uploaded file exceeds supported size.</value>
+  </data>
+  <data name="ForgotPassword" xml:space="preserve">
+    <value>Forgot Password</value>
+  </data>
+  <data name="HiddenUserNotFound" xml:space="preserve">
+    <value>Hidden user not found.</value>
+  </data>
+  <data name="InvalidEmailOrPassword" xml:space="preserve">
+    <value>Invalid email address or password.</value>
+  </data>
+  <data name="InvalidOTP" xml:space="preserve">
+    <value>Please enter a valid OTP.</value>
+  </data>
+  <data name="LikedUserNotFound" xml:space="preserve">
+    <value>Liked user not found.</value>
+  </data>
+  <data name="LoggedOutSuccessfully" xml:space="preserve">
+    <value>Logged out successfully.</value>
+  </data>
+  <data name="NoAcceptedRequestAvailable" xml:space="preserve">
+    <value>No accepted requests available.</value>
+  </data>
+  <data name="NoBlockedUsersFound" xml:space="preserve">
+    <value>No blocked users found.</value>
+  </data>
+  <data name="NoHiddenUsersFound" xml:space="preserve">
+    <value>No hidden users found.</value>
+  </data>
+  <data name="NoLikedUsersFound" xml:space="preserve">
+    <value>No liked users found.</value>
+  </data>
+  <data name="NoReceivedRequestAvailable" xml:space="preserve">
+    <value>No received requests available.</value>
+  </data>
+  <data name="NoReportedUsersFound" xml:space="preserve">
+    <value>No reported users found.</value>
+  </data>
+  <data name="NoSentRequestAvailable" xml:space="preserve">
+    <value>No sent requests available.</value>
+  </data>
+  <data name="NotFound" xml:space="preserve">
+    <value>Data is not found.</value>
+  </data>
+  <data name="NoValidFilesUploaded" xml:space="preserve">
+    <value>No valid files uploaded.</value>
+  </data>
+  <data name="OldPasswordInvalid" xml:space="preserve">
+    <value>Old password is invalid.</value>
+  </data>
+  <data name="OTPExpired" xml:space="preserve">
+    <value>OTP has expired.</value>
+  </data>
+  <data name="OTPFailed" xml:space="preserve">
+    <value>Something went wrong with OTP.</value>
+  </data>
+  <data name="OTPSentSuccessfully" xml:space="preserve">
+    <value>OTP has been sent successfully.</value>
+  </data>
+  <data name="OTPSentSuccessfullyCheckEmail" xml:space="preserve">
+    <value>OTP has been sent successfully, check your email.</value>
+  </data>
+  <data name="OTPVerifiedSuccessfully" xml:space="preserve">
+    <value>OTP verified successfully.</value>
+  </data>
+  <data name="PasswordUpdatedSuccessfully" xml:space="preserve">
+    <value>Password updated successfully.</value>
+  </data>
+  <data name="PleaseSelectFiles" xml:space="preserve">
+    <value>Please select files.</value>
+  </data>
+  <data name="ProfileLikeMsg" xml:space="preserve">
+    <value>Your profile was liked by {0}. Check them out!</value>
+  </data>
+  <data name="ProfileUpdateMsg" xml:space="preserve">
+    <value>{0} updated their profile. Check out the latest details.</value>
+  </data>
+  <data name="ProfileVerifiedMsg" xml:space="preserve">
+    <value>Your profile has been successfully verified.</value>
+  </data>
+  <data name="ProfileViewMsg" xml:space="preserve">
+    <value>{0} is viewed your profile.</value>
+  </data>
+  <data name="ReportedUserNotFound" xml:space="preserve">
+    <value>Reported user not found.</value>
+  </data>
+  <data name="ReqAcceptedMsg" xml:space="preserve">
+    <value>{0} accepted your connection request.</value>
+  </data>
+  <data name="ReqSentMsg" xml:space="preserve">
+    <value>{0} sent you a connection request.</value>
+  </data>
+  <data name="RequestApprovedSuccessfully" xml:space="preserve">
+    <value>Request approved successfully.</value>
+  </data>
+  <data name="RequestDeletedSuccessfully" xml:space="preserve">
+    <value>Request deleted successfully.</value>
+  </data>
+  <data name="RolesCreatedSuccessfully" xml:space="preserve">
+    <value>Roles created successfully.</value>
+  </data>
+  <data name="SendRequestSuccessfully" xml:space="preserve">
+    <value>Request sent successfully.</value>
+  </data>
+  <data name="Success" xml:space="preserve">
+    <value>Success.</value>
+  </data>
+  <data name="TokenAlreadyExists" xml:space="preserve">
+    <value>Token already exists.</value>
+  </data>
+  <data name="TokenRemoved" xml:space="preserve">
+    <value>Token is removed.</value>
+  </data>
+  <data name="UnableToDislikeUser" xml:space="preserve">
+    <value>Unable to dislike this user at the moment. Please try again later.</value>
+  </data>
+  <data name="UnableToProcessRequest" xml:space="preserve">
+    <value>Unable to process your request. Please try again.</value>
+  </data>
+  <data name="UnableToUnblockUser" xml:space="preserve">
+    <value>Unable to unblock this user at the moment. Please try again later.</value>
+  </data>
+  <data name="UnableToUnhideUser" xml:space="preserve">
+    <value>Unable to unhide the user at this time. Please try again later.</value>
+  </data>
+  <data name="UnableToUnreportUser" xml:space="preserve">
+    <value>Unable to unreport this user at the moment. Please try again later.</value>
+  </data>
+  <data name="UserAlreadyExists" xml:space="preserve">
+    <value>User already exists, please login.</value>
+  </data>
+  <data name="UserBlockedSuccessfully" xml:space="preserve">
+    <value>User has been blocked successfully.</value>
+  </data>
+  <data name="UserDislikedSuccessfully" xml:space="preserve">
+    <value>User has been disliked successfully.</value>
+  </data>
+  <data name="UserHiddenSuccessfully" xml:space="preserve">
+    <value>User has been hidden successfully.</value>
+  </data>
+  <data name="UserLikedSuccessfully" xml:space="preserve">
+    <value>User has been liked successfully.</value>
+  </data>
+  <data name="UserNotExistsPleaseSignup" xml:space="preserve">
+    <value>User does not exist, please sign up first.</value>
+  </data>
+  <data name="UserNotFound" xml:space="preserve">
+    <value>User is not found.</value>
+  </data>
+  <data name="UserReportClearedSuccessfully" xml:space="preserve">
+    <value>User report cleared successfully.</value>
+  </data>
+  <data name="UserReportedSuccessfully" xml:space="preserve">
+    <value>User has been reported successfully.</value>
+  </data>
+  <data name="UserUnblockedSuccessfully" xml:space="preserve">
+    <value>User has been unblocked successfully.</value>
+  </data>
+  <data name="UserUnhiddenSuccessfully" xml:space="preserve">
+    <value>User has been unhidden successfully.</value>
+  </data>
+  <data name="VerifyOTP" xml:space="preserve">
+    <value>Verify OTP</value>
+  </data>
+</root>

@@ -1,0 +1,127 @@
+
+CREATE TABLE [dbo].[BlockUser](
+	[Id] [uniqueidentifier] NOT NULL,
+	[ProfileIdFrom] [uniqueidentifier] NOT NULL,
+	[ProfileIdTo] [uniqueidentifier] NOT NULL,
+	[CreatedBy] [nvarchar](450) NULL,
+	[CreatedOn] [datetime] NULL,
+ CONSTRAINT [PK_BlockUser] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[BlockUser] ADD  CONSTRAINT [DF_BlockUser_Id]  DEFAULT (newid()) FOR [Id]
+GO
+
+ALTER TABLE [dbo].[BlockUser]  WITH CHECK ADD  CONSTRAINT [FK_BlockUser_MatrimonyProfiles] FOREIGN KEY([ProfileIdFrom])
+REFERENCES [dbo].[MatrimonyProfiles] ([Id])
+GO
+
+ALTER TABLE [dbo].[BlockUser] CHECK CONSTRAINT [FK_BlockUser_MatrimonyProfiles]
+GO
+
+ALTER TABLE [dbo].[BlockUser]  WITH CHECK ADD  CONSTRAINT [FK_BlockUser_MatrimonyProfiles1] FOREIGN KEY([ProfileIdTo])
+REFERENCES [dbo].[MatrimonyProfiles] ([Id])
+GO
+
+ALTER TABLE [dbo].[BlockUser] CHECK CONSTRAINT [FK_BlockUser_MatrimonyProfiles1]
+GO
+
+
+
+CREATE TABLE [dbo].[FavoriteUser](
+	[Id] [uniqueidentifier] NOT NULL,
+	[ProfileIdFrom] [uniqueidentifier] NOT NULL,
+	[ProfileIdTo] [uniqueidentifier] NOT NULL,
+	[CreatedBy] [nvarchar](450) NULL,
+	[CreatedOn] [datetime] NULL,
+ CONSTRAINT [PK_FavoriteUser] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[FavoriteUser] ADD  CONSTRAINT [DF_FavoriteUser_Id]  DEFAULT (newid()) FOR [Id]
+GO
+
+ALTER TABLE [dbo].[FavoriteUser]  WITH CHECK ADD  CONSTRAINT [FK_FavoriteUser_MatrimonyProfiles] FOREIGN KEY([ProfileIdFrom])
+REFERENCES [dbo].[MatrimonyProfiles] ([Id])
+GO
+
+ALTER TABLE [dbo].[FavoriteUser] CHECK CONSTRAINT [FK_FavoriteUser_MatrimonyProfiles]
+GO
+
+ALTER TABLE [dbo].[FavoriteUser]  WITH CHECK ADD  CONSTRAINT [FK_FavoriteUser_MatrimonyProfiles1] FOREIGN KEY([ProfileIdTo])
+REFERENCES [dbo].[MatrimonyProfiles] ([Id])
+GO
+
+ALTER TABLE [dbo].[FavoriteUser] CHECK CONSTRAINT [FK_FavoriteUser_MatrimonyProfiles1]
+GO
+
+
+
+CREATE TABLE [dbo].[HideUser](
+	[Id] [uniqueidentifier] NOT NULL,
+	[ProfileIdFrom] [uniqueidentifier] NOT NULL,
+	[ProfileIdTo] [uniqueidentifier] NOT NULL,
+	[CreatedBy] [nvarchar](450) NULL,
+	[CreatedOn] [datetime] NULL,
+ CONSTRAINT [PK_HideUser] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[HideUser] ADD  CONSTRAINT [DF_HideUser_Id]  DEFAULT (newid()) FOR [Id]
+GO
+
+ALTER TABLE [dbo].[HideUser]  WITH CHECK ADD  CONSTRAINT [FK_HideUser_MatrimonyProfiles] FOREIGN KEY([ProfileIdFrom])
+REFERENCES [dbo].[MatrimonyProfiles] ([Id])
+GO
+
+ALTER TABLE [dbo].[HideUser] CHECK CONSTRAINT [FK_HideUser_MatrimonyProfiles]
+GO
+
+ALTER TABLE [dbo].[HideUser]  WITH CHECK ADD  CONSTRAINT [FK_HideUser_MatrimonyProfiles1] FOREIGN KEY([ProfileIdTo])
+REFERENCES [dbo].[MatrimonyProfiles] ([Id])
+GO
+
+ALTER TABLE [dbo].[HideUser] CHECK CONSTRAINT [FK_HideUser_MatrimonyProfiles1]
+GO
+
+
+
+CREATE TABLE [dbo].[ReportUser](
+	[Id] [uniqueidentifier] NOT NULL,
+	[ProfileIdFrom] [uniqueidentifier] NOT NULL,
+	[ProfileIdTo] [uniqueidentifier] NOT NULL,
+	[Reason] [nvarchar](500) NULL,
+	[CreatedBy] [nvarchar](450) NULL,
+	[CreatedOn] [datetime] NULL,
+ CONSTRAINT [PK_ReportUser] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[ReportUser] ADD  CONSTRAINT [DF_ReportUser_Id]  DEFAULT (newid()) FOR [Id]
+GO
+
+ALTER TABLE [dbo].[ReportUser]  WITH CHECK ADD  CONSTRAINT [FK_ReportUser_MatrimonyProfiles] FOREIGN KEY([ProfileIdFrom])
+REFERENCES [dbo].[MatrimonyProfiles] ([Id])
+GO
+
+ALTER TABLE [dbo].[ReportUser] CHECK CONSTRAINT [FK_ReportUser_MatrimonyProfiles]
+GO
+
+ALTER TABLE [dbo].[ReportUser]  WITH CHECK ADD  CONSTRAINT [FK_ReportUser_MatrimonyProfiles1] FOREIGN KEY([ProfileIdTo])
+REFERENCES [dbo].[MatrimonyProfiles] ([Id])
+GO
+
+ALTER TABLE [dbo].[ReportUser] CHECK CONSTRAINT [FK_ReportUser_MatrimonyProfiles1]
+GO

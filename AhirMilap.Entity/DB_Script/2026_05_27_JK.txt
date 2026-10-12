@@ -1,0 +1,202 @@
+
+CREATE TABLE [dbo].[Notifications](
+	[Id] [uniqueidentifier] NOT NULL,
+	[SenderProfileId] [uniqueidentifier] NOT NULL,
+	[ReceiverProfileId] [uniqueidentifier] NOT NULL,
+	[NotificationType] [nvarchar](50) NOT NULL,
+	[Title] [nvarchar](200) NULL,
+	[Message] [nvarchar](500) NULL,
+	[IsRead] [bit] NOT NULL,
+	[CreatedBy] [nvarchar](max) NOT NULL,
+	[CreatedOn] [datetime2](7) NOT NULL,
+	[UpdatedBy] [nvarchar](max) NULL,
+	[UpdatedOn] [datetime2](7) NULL,
+ CONSTRAINT [PK_Notifications] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[Notifications] ADD  CONSTRAINT [DF_Notifications_Id]  DEFAULT (newid()) FOR [Id]
+GO
+
+ALTER TABLE [dbo].[Notifications] ADD  CONSTRAINT [DF__Notificat__IsRea__66EA454A]  DEFAULT ((0)) FOR [IsRead]
+GO
+
+ALTER TABLE [dbo].[Notifications]  WITH CHECK ADD  CONSTRAINT [FK_Notifications_MatrimonyProfiles] FOREIGN KEY([SenderProfileId])
+REFERENCES [dbo].[MatrimonyProfiles] ([Id])
+GO
+
+ALTER TABLE [dbo].[Notifications] CHECK CONSTRAINT [FK_Notifications_MatrimonyProfiles]
+GO
+
+ALTER TABLE [dbo].[Notifications]  WITH CHECK ADD  CONSTRAINT [FK_Notifications_MatrimonyProfiles1] FOREIGN KEY([ReceiverProfileId])
+REFERENCES [dbo].[MatrimonyProfiles] ([Id])
+GO
+
+ALTER TABLE [dbo].[Notifications] CHECK CONSTRAINT [FK_Notifications_MatrimonyProfiles1]
+GO
+
+CREATE or alter PROCEDURE usp_SaveNotifications
+(
+	@Id UNIQUEIDENTIFIER = NULL,
+    @SenderProfileId uniqueidentifier,
+    @ReceiverProfileId uniqueidentifier,
+    @NotificationType NVARCHAR(50),
+    @Title NVARCHAR(100),
+    @Message NVARCHAR(500),
+    @CreatedBy nvarchar(450),
+	@CreatedOn datetime
+)
+AS
+BEGIN
+
+    SET NOCOUNT ON;
+
+	-- UPDATE
+    IF @Id IS NOT NULL
+    BEGIN
+        UPDATE Notifications
+        SET IsRead = 1,
+		UpdatedBy = @CreatedBy,
+		UpdatedOn = @CreatedOn
+        OUTPUT INSERTED.*
+        WHERE Id = @Id;
+
+        RETURN;
+    END
+
+    INSERT INTO Notifications
+    (
+        SenderProfileId,
+        ReceiverProfileId,
+        NotificationType,
+        Title,
+        Message, 
+        CreatedBy,
+		CreatedOn
+    )
+	OUTPUT INSERTED.*   -- returns newly inserted record
+    VALUES
+    (
+        @SenderProfileId,
+        @ReceiverProfileId,
+        @NotificationType,
+        @Title,
+        @Message,
+		@CreatedBy,
+		@CreatedOn
+    ) 
+END
+GO
+CREATE or alter PROCEDURE usp_GetNotificationsByProfileId
+(
+    @ProfileId uniqueidentifier,
+	@PageIndex INT = 1,  
+    @PageSize INT = 50  
+)
+AS
+BEGIN
+
+    SET NOCOUNT ON;
+
+    SELECT
+        N.Id,
+        N.NotificationType,
+        N.Title,
+        N.Message, 
+        N.IsRead,
+        N.CreatedOn,
+        MP.Id AS SenderProfileId,
+        MP.FirstName + ' ' + MP.LastName AS SenderName,
+        dbo.GetFullFilePath(MP.ProfileFilePath) AS ProfileFilePath
+    FROM Notifications N
+    INNER JOIN MatrimonyProfiles MP ON N.SenderProfileId = MP.Id
+    WHERE N.ReceiverProfileId = @ProfileId 
+    ORDER BY N.CreatedOn DESC
+	OFFSET (@PageIndex - 1) * @PageSize ROWS  
+    FETCH NEXT @PageSize ROWS ONLY;  
+END
+GO
+CREATE OR ALTER PROCEDURE [dbo].[USP_GetMyChatList]
+(
+    @ProfileId UNIQUEIDENTIFIER,
+    @PageIndex INT = 1,
+    @PageSize INT = 50,
+    @Search NVARCHAR(100) = NULL
+)
+AS
+-- [dbo].[USP_GetMyChatList] '6EA99C8C-BC07-4DBF-9A0F-3E4562E3D8B9'
+BEGIN
+    SET NOCOUNT ON;
+
+    ;WITH LastMessages AS
+    (
+        SELECT 
+            m.ChatRoomId,
+            m.MessageText,
+            m.CreatedOn,
+            m.IsRead,
+            m.SenderProfileId,
+
+            ROW_NUMBER() OVER
+            (
+                PARTITION BY m.ChatRoomId
+                ORDER BY m.CreatedOn DESC
+            ) AS RN
+
+        FROM Messages m
+    )
+
+    SELECT
+        cr.Id AS ChatRoomId,
+
+        CASE
+            WHEN cr.Profile1Id = @ProfileId 
+                THEN cr.Profile2Id
+            ELSE cr.Profile1Id
+        END AS OppositeProfileId,
+
+        mp.FirstName +' '+mp.LastName AS FullName,
+        dbo.GetFullFilePath(mp.ProfileFilePath) AS ProfileFilePath,
+
+        lm.MessageText AS LastMessage,
+        lm.CreatedOn AS LastMessageTime,
+
+        (
+            SELECT COUNT(*)
+            FROM Messages um
+            WHERE um.ChatRoomId = cr.Id
+              AND um.IsRead = 0
+              AND um.SenderProfileId != @ProfileId
+        ) AS UnreadCount
+
+    FROM ChatRooms cr
+
+    INNER JOIN MatrimonyProfiles mp
+        ON mp.Id = CASE
+                        WHEN cr.Profile1Id = @ProfileId
+                            THEN cr.Profile2Id
+                        ELSE cr.Profile1Id
+                   END
+
+    LEFT JOIN LastMessages lm
+        ON cr.Id = lm.ChatRoomId
+       AND lm.RN = 1
+
+    WHERE
+        cr.Profile1Id = @ProfileId
+        OR cr.Profile2Id = @ProfileId
+
+        AND (
+            @Search IS NULL
+            OR mp.FirstName +' '+mp.LastName LIKE '%' + @Search + '%'
+        )
+
+    ORDER BY lm.CreatedOn DESC
+
+    OFFSET (@PageIndex - 1) * @PageSize ROWS
+    FETCH NEXT @PageSize ROWS ONLY;
+END
+GO

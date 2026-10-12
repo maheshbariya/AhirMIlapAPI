@@ -1,0 +1,39 @@
+ALTER   PROCEDURE [dbo].[usp_GetNotificationsByProfileId]
+(
+    @ProfileId uniqueidentifier,
+	@PageIndex INT = 1,  
+    @PageSize INT = 25,
+	@Type NVARCHAR(50) = 'ALL'
+)
+AS
+/*
+ exec usp_GetNotificationsByProfileId 'DABA2D8D-1D1A-4E55-8482-F981404FE526',1,25,'PROFILE_VIEW'
+*/
+BEGIN
+
+    SET NOCOUNT ON;
+
+	SELECT COUNT(1) AS TotalCount 
+	FROM Notifications
+	WHERE ReceiverProfileId = @ProfileId 
+	AND (@Type = 'ALL' OR NotificationType = @Type)
+
+
+    SELECT
+        N.Id,
+        N.NotificationType,
+        N.Title,
+        N.Message, 
+        N.IsRead,
+        N.CreatedOn,
+        MP.Id AS SenderProfileId,
+        MP.FirstName + ' ' + MP.LastName AS SenderName,
+        dbo.GetFullFilePath(MP.ProfileFilePath) AS ProfileFilePath
+    FROM Notifications N
+    INNER JOIN MatrimonyProfiles MP ON N.SenderProfileId = MP.Id
+    WHERE N.ReceiverProfileId = @ProfileId 
+	AND (@Type = 'ALL' OR N.NotificationType = @Type)
+    ORDER BY N.CreatedOn DESC
+	OFFSET (@PageIndex - 1) * @PageSize ROWS  
+    FETCH NEXT @PageSize ROWS ONLY;  
+END

@@ -1,0 +1,29 @@
+  
+CREATE or alter  PROCEDURE [dbo].[usp_GetFirebaseTokenByUserId]  
+(  
+ @ProfileToId uniqueidentifier, 
+ @ProfileFromId uniqueidentifier  
+)  
+AS  
+/*
+ exec usp_GetFirebaseTokenByUserId 'D3793067-78CA-40F9-9624-D196A2333375','6EA99C8C-BC07-4DBF-9A0F-3E4562E3D8B9'
+*/
+BEGIN  
+    SET NOCOUNT ON;  
+  
+ DECLARE @UserId nvarchar(450);  
+ SELECT @UserId = UserId FROM MatrimonyProfiles WHERE Id = @ProfileToId  
+  
+    SELECT  
+        F.Id,  
+        F.UserId,  
+        F.FcmToken,  
+        F.CreatedBy,  
+        F.CreatedOn,
+		CONCAT(U.FirstName, ' ', U.LastName) AS ReceiverName,
+		(SELECT CONCAT(FirstName, ' ', LastName) FROM MatrimonyProfiles WHERE Id = @ProfileFromId) AS SenderName
+    FROM FirebaseToken F
+	INNER JOIN AspNetUsers U ON F.UserId = U.Id
+    WHERE UserId = @UserId  
+    ORDER BY CreatedOn DESC
+END

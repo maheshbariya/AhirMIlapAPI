@@ -1,0 +1,315 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="BlockedUserNotFound" xml:space="preserve">
+    <value>બ્લોક કરેલો યુઝર મળ્યો નથી.</value>
+  </data>
+  <data name="DataAlreadyExists" xml:space="preserve">
+    <value>માહિતી પહેલેથી અસ્તિત્વમાં છે.</value>
+  </data>
+  <data name="DataDeletedSuccessfully" xml:space="preserve">
+    <value>માહિતી સફળતાપૂર્વક કાઢી નાખવામાં આવી.</value>
+  </data>
+  <data name="DataFetchedSuccessfully" xml:space="preserve">
+    <value>માહિતી સફળતાપૂર્વક મેળવી.</value>
+  </data>
+  <data name="DataGatedSuccessfully" xml:space="preserve">
+    <value>માહિતી સફળતાપૂર્વક પ્રાપ્ત કરવામાં આવી.</value>
+  </data>
+  <data name="DataSavedSuccessfully" xml:space="preserve">
+    <value>માહિતી સફળતાપૂર્વક સાચવવામાં આવી.</value>
+  </data>
+  <data name="DeleteRecordAssociated" xml:space="preserve">
+    <value>આ રેકોર્ડ અન્ય ટેબલ સાથે જોડાયેલ હોવાથી તેને કાઢી શકાયો નથી.</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>કંઈક ખોટું થયું છે.</value>
+  </data>
+  <data name="FavoriteUserDeletedSuccessfully" xml:space="preserve">
+    <value>ફેવરિટ યુઝર સફળતાપૂર્વક કાઢી નાખવામાં આવ્યો.</value>
+  </data>
+  <data name="FileNotSupported" xml:space="preserve">
+    <value>ફાઇલ પ્રકાર સપોર્ટેડ નથી.</value>
+  </data>
+  <data name="FileSizeExceeded" xml:space="preserve">
+    <value>અપલોડ કરેલી ફાઇલનું કદ મર્યાદા કરતાં વધુ છે.</value>
+  </data>
+  <data name="ForgotPassword" xml:space="preserve">
+    <value>પાસવર્ડ ભૂલી ગયા</value>
+  </data>
+  <data name="HiddenUserNotFound" xml:space="preserve">
+    <value>હાઇડ કરેલો યુઝર મળ્યો નથી.</value>
+  </data>
+  <data name="InvalidEmailOrPassword" xml:space="preserve">
+    <value>અમાન્ય ઇમેઇલ સરનામું અથવા પાસવર્ડ.</value>
+  </data>
+  <data name="InvalidOTP" xml:space="preserve">
+    <value>કૃપા કરીને માન્ય OTP દાખલ કરો.</value>
+  </data>
+  <data name="LikedUserNotFound" xml:space="preserve">
+    <value>લાઈક કરેલો યુઝર મળ્યો નથી.</value>
+  </data>
+  <data name="LoggedOutSuccessfully" xml:space="preserve">
+    <value>સફળતાપૂર્વક લોગઆઉટ થયા.</value>
+  </data>
+  <data name="NoAcceptedRequestAvailable" xml:space="preserve">
+    <value>કોઈ સ્વીકારેલી વિનંતીઓ ઉપલબ્ધ નથી.</value>
+  </data>
+  <data name="NoBlockedUsersFound" xml:space="preserve">
+    <value>કોઈ બ્લોક કરેલા યુઝર્સ મળ્યા નથી.</value>
+  </data>
+  <data name="NoHiddenUsersFound" xml:space="preserve">
+    <value>કોઈ હાઇડ કરેલા યુઝર્સ મળ્યા નથી.</value>
+  </data>
+  <data name="NoLikedUsersFound" xml:space="preserve">
+    <value>કોઈ પસંદ કરેલા યુઝર્સ મળ્યા નથી.</value>
+  </data>
+  <data name="NoReceivedRequestAvailable" xml:space="preserve">
+    <value>કોઈ પ્રાપ્ત થયેલી વિનંતીઓ ઉપલબ્ધ નથી.</value>
+  </data>
+  <data name="NoReportedUsersFound" xml:space="preserve">
+    <value>કોઈ રિપોર્ટ કરેલા યુઝર્સ મળ્યા નથી.</value>
+  </data>
+  <data name="NoSentRequestAvailable" xml:space="preserve">
+    <value>કોઈ મોકલેલી વિનંતીઓ ઉપલબ્ધ નથી.</value>
+  </data>
+  <data name="NotFound" xml:space="preserve">
+    <value>માહિતી મળી નથી.</value>
+  </data>
+  <data name="NoValidFilesUploaded" xml:space="preserve">
+    <value>કોઈ માન્ય ફાઇલ અપલોડ થઈ નથી.</value>
+  </data>
+  <data name="OldPasswordInvalid" xml:space="preserve">
+    <value>જૂનો પાસવર્ડ અમાન્ય છે.</value>
+  </data>
+  <data name="OTPExpired" xml:space="preserve">
+    <value>OTP ની સમયમર્યાદા પૂર્ણ થઈ ગઈ છે.</value>
+  </data>
+  <data name="OTPFailed" xml:space="preserve">
+    <value>OTP સંબંધિત પ્રક્રિયામાં કંઈક ખોટું થયું છે.</value>
+  </data>
+  <data name="OTPSentSuccessfully" xml:space="preserve">
+    <value>OTP સફળતાપૂર્વક મોકલવામાં આવ્યો.</value>
+  </data>
+  <data name="OTPSentSuccessfullyCheckEmail" xml:space="preserve">
+    <value>OTP સફળતાપૂર્વક મોકલવામાં આવ્યો, કૃપા કરીને તમારું ઇમેઇલ તપાસો.</value>
+  </data>
+  <data name="OTPVerifiedSuccessfully" xml:space="preserve">
+    <value>OTP સફળતાપૂર્વક ચકાસવામાં આવ્યો.</value>
+  </data>
+  <data name="PasswordUpdatedSuccessfully" xml:space="preserve">
+    <value>પાસવર્ડ સફળતાપૂર્વક અપડેટ થયો.</value>
+  </data>
+  <data name="PleaseSelectFiles" xml:space="preserve">
+    <value>કૃપા કરીને ફાઇલો પસંદ કરો.</value>
+  </data>
+  <data name="ProfileLikeMsg" xml:space="preserve">
+    <value>{0} ને તમારી પ્રોફાઇલ પસંદ આવી છે. તેમની પ્રોફાઇલ જુઓ!</value>
+  </data>
+  <data name="ProfileUpdateMsg" xml:space="preserve">
+    <value>{0} એ તેમની પ્રોફાઇલ અપડેટ કરી છે. નવી વિગતો જુઓ.</value>
+  </data>
+  <data name="ProfileVerifiedMsg" xml:space="preserve">
+    <value>તમારી પ્રોફાઇલ સફળતાપૂર્વક ચકાસાઈ ગઈ છે.</value>
+  </data>
+  <data name="ProfileViewMsg" xml:space="preserve">
+    <value>{0} એ તમારી પ્રોફાઇલ જોઈ છે.</value>
+  </data>
+  <data name="ReportedUserNotFound" xml:space="preserve">
+    <value>રિપોર્ટ કરેલો યુઝર મળ્યો નથી.</value>
+  </data>
+  <data name="ReqAcceptedMsg" xml:space="preserve">
+    <value>{0} એ તમારી કનેક્શન વિનંતી સ્વીકારી છે.</value>
+  </data>
+  <data name="ReqSentMsg" xml:space="preserve">
+    <value>{0} એ તમને કનેક્શન વિનંતી મોકલી છે.</value>
+  </data>
+  <data name="RequestApprovedSuccessfully" xml:space="preserve">
+    <value>વિનંતી સફળતાપૂર્વક મંજૂર કરવામાં આવી છે.</value>
+  </data>
+  <data name="RequestDeletedSuccessfully" xml:space="preserve">
+    <value>વિનંતી સફળતાપૂર્વક કાઢી નાખવામાં આવી છે.</value>
+  </data>
+  <data name="RolesCreatedSuccessfully" xml:space="preserve">
+    <value>રોલ્સ સફળતાપૂર્વક બનાવવામાં આવ્યા.</value>
+  </data>
+  <data name="SendRequestSuccessfully" xml:space="preserve">
+    <value>વિનંતી સફળતાપૂર્વક મોકલવામાં આવી છે.</value>
+  </data>
+  <data name="Success" xml:space="preserve">
+    <value>સફળતા.</value>
+  </data>
+  <data name="TokenAlreadyExists" xml:space="preserve">
+    <value>ટોકન પહેલેથી અસ્તિત્વમાં છે.</value>
+  </data>
+  <data name="TokenRemoved" xml:space="preserve">
+    <value>ટોકન દૂર કરવામાં આવ્યું છે.</value>
+  </data>
+  <data name="UnableToDislikeUser" xml:space="preserve">
+    <value>હાલમાં આ યુઝરને ડિસલાઈક કરી શકાયો નથી. કૃપા કરીને પછી ફરી પ્રયાસ કરો.</value>
+  </data>
+  <data name="UnableToProcessRequest" xml:space="preserve">
+    <value>તમારી વિનંતી પ્રક્રિયા કરી શકાઈ નથી. કૃપા કરીને ફરી પ્રયાસ કરો.</value>
+  </data>
+  <data name="UnableToUnblockUser" xml:space="preserve">
+    <value>હાલમાં આ યુઝરને અનબ્લોક કરી શકાયો નથી. કૃપા કરીને થોડા સમય પછી ફરી પ્રયાસ કરો.</value>
+  </data>
+  <data name="UnableToUnhideUser" xml:space="preserve">
+    <value>હાલમાં યુઝરને અનહાઇડ કરી શકાયો નથી. કૃપા કરીને પછી ફરી પ્રયાસ કરો.</value>
+  </data>
+  <data name="UnableToUnreportUser" xml:space="preserve">
+    <value>હાલમાં આ યુઝરની રિપોર્ટ દૂર કરી શકાયી નથી. કૃપા કરીને પછી ફરી પ્રયાસ કરો.</value>
+  </data>
+  <data name="UserAlreadyExists" xml:space="preserve">
+    <value>યુઝર પહેલેથી હાજર છે, કૃપા કરીને લોગિન કરો.</value>
+  </data>
+  <data name="UserBlockedSuccessfully" xml:space="preserve">
+    <value>યુઝરને સફળતાપૂર્વક બ્લોક કરવામાં આવ્યો છે.</value>
+  </data>
+  <data name="UserDislikedSuccessfully" xml:space="preserve">
+    <value>યુઝરને સફળતાપૂર્વક ડિસલાઈક કરવામાં આવ્યો છે.</value>
+  </data>
+  <data name="UserHiddenSuccessfully" xml:space="preserve">
+    <value>યુઝરને સફળતાપૂર્વક હાઇડ કરવામાં આવ્યો છે.</value>
+  </data>
+  <data name="UserLikedSuccessfully" xml:space="preserve">
+    <value>યુઝરને સફળતાપૂર્વક લાઈક કરવામાં આવ્યો છે.</value>
+  </data>
+  <data name="UserNotExistsPleaseSignup" xml:space="preserve">
+    <value>યુઝર અસ્તિત્વમાં નથી, કૃપા કરીને પહેલા સાઇન અપ કરો.</value>
+  </data>
+  <data name="UserNotFound" xml:space="preserve">
+    <value>યુઝર મળ્યો નથી.</value>
+  </data>
+  <data name="UserReportClearedSuccessfully" xml:space="preserve">
+    <value>યુઝર રિપોર્ટ સફળતાપૂર્વક દૂર કરવામાં આવ્યો છે.</value>
+  </data>
+  <data name="UserReportedSuccessfully" xml:space="preserve">
+    <value>યુઝરની સફળતાપૂર્વક રિપોર્ટ કરવામાં આવી છે.</value>
+  </data>
+  <data name="UserUnblockedSuccessfully" xml:space="preserve">
+    <value>યુઝરને સફળતાપૂર્વક અનબ્લોક કરવામાં આવ્યો છે.</value>
+  </data>
+  <data name="UserUnhiddenSuccessfully" xml:space="preserve">
+    <value>યુઝરને સફળતાપૂર્વક અનહાઇડ કરવામાં આવ્યો છે.</value>
+  </data>
+  <data name="VerifyOTP" xml:space="preserve">
+    <value>OTP ચકાસો</value>
+  </data>
+</root>

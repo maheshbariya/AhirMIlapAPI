@@ -1,0 +1,14 @@
+CREATE OR ALTER PROCEDURE [dbo].[usp_GetProfession]
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT 
+        ROW_NUMBER() OVER (ORDER BY Occupation) AS Id,
+        Occupation AS Name
+    FROM [dbo].[MatrimonyProfiles]
+    WHERE Occupation IS NOT NULL
+    GROUP BY Occupation
+    ORDER BY Occupation;
+END
+GO

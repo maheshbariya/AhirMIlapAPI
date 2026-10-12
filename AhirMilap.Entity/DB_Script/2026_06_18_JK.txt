@@ -1,0 +1,201 @@
+CREATE OR ALTER PROCEDURE [dbo].[usp_DeleteProfilePhotoById]
+@Id UNIQUEIDENTIFIER
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DELETE FROM MatrimonyProfilePhotos
+    WHERE Id = @Id;
+
+    SELECT 1 AS Success;
+END
+GO
+CREATE OR ALTER   PROCEDURE [dbo].[usp_UpdateProfilePhoto]
+(
+    @PhotoPath NVARCHAR(500),
+    @SortOrder INT,
+    @CreatedBy NVARCHAR(450),
+    @CreatedOn DATETIME
+)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @Id UNIQUEIDENTIFIER;
+    DECLARE @ProfileId UNIQUEIDENTIFIER;
+
+    -- Get Profile Id from CreatedBy user
+    SELECT TOP 1
+        @ProfileId = Id
+    FROM MatrimonyProfiles
+    WHERE CreatedBy = @CreatedBy;
+
+    -- If SortOrder = 0 then update Profile main photo
+    IF (@SortOrder = 0)
+    BEGIN
+        UPDATE MatrimonyProfiles
+        SET
+            ProfileFilePath = @PhotoPath,
+			UpdatedBy = @CreatedBy,
+			UpdatedOn = @CreatedOn
+        WHERE Id = @ProfileId;
+
+		-- Return updated record
+		SELECT 
+			Id,
+			Id AS ProfileId,
+			dbo.GetFullFilePath(ProfileFilePath) AS PhotoPath, 
+			0 AS SortOrder,
+			CreatedBy,
+			CreatedOn
+		FROM MatrimonyProfiles
+		WHERE Id = @ProfileId;
+
+		RETURN;
+    END
+
+    -- Check if photo already exists for same user + sort order
+    IF EXISTS
+    (
+        SELECT 1
+        FROM MatrimonyProfilePhotos
+        WHERE CreatedBy = @CreatedBy
+        AND SortOrder = @SortOrder
+    )
+    BEGIN
+        -- UPDATE existing photo
+        UPDATE MatrimonyProfilePhotos
+        SET
+            PhotoPath = @PhotoPath,
+            CreatedOn = @CreatedOn
+        WHERE CreatedBy = @CreatedBy
+        AND SortOrder = @SortOrder;
+
+        -- Get updated Id
+        SELECT TOP 1
+            @Id = Id
+        FROM MatrimonyProfilePhotos
+        WHERE CreatedBy = @CreatedBy
+        AND SortOrder = @SortOrder;
+    END
+    ELSE
+    BEGIN
+        -- INSERT new photo
+        SET @Id = NEWID();
+
+        INSERT INTO MatrimonyProfilePhotos
+        (
+            Id,
+            ProfileId,
+            PhotoPath,
+            SortOrder,
+            CreatedBy,
+            CreatedOn
+        )
+        VALUES
+        (
+            @Id,
+            @ProfileId,
+            @PhotoPath,
+            @SortOrder,
+            @CreatedBy,
+            @CreatedOn
+        );
+    END
+
+    -- Return inserted/updated record
+    SELECT
+        Id,
+        ProfileId,
+		dbo.GetFullFilePath(PhotoPath) AS PhotoPath,  
+        SortOrder,
+        CreatedBy,
+        CreatedOn
+    FROM MatrimonyProfilePhotos
+    WHERE Id = @Id;
+END
+GO
+CREATE OR ALTER PROCEDURE [dbo].[usp_GetMatrimonyProfilePublic]  
+(      
+	@SenderProfileId uniqueidentifier = NULL,  
+	@Id uniqueidentifier = NULL  
+)      
+AS      
+/*
+EXEC usp_GetMatrimonyProfilePublic '6EA99C8C-BC07-4DBF-9A0F-3E4562E3D8B9','B04BFCC3-8BC6-4336-A3A6-3C6F4914C6BF'
+*/
+BEGIN      
+    SET NOCOUNT ON;  
+    DECLARE @RequestStatus NVARCHAR(100), @IsSentNotification BIT = 0;  
+  
+    SELECT @RequestStatus =  
+    CASE  
+        WHEN C.StatusId = 1 THEN 'Request Pending'  
+        WHEN C.StatusId = 2 THEN 'Request Accepted'  
+        ELSE 'No Request'  
+    END  
+    FROM dbo.ConnectionUser C WITH (NOLOCK)  
+    WHERE C.ProfileIdFrom = @SenderProfileId  
+    AND C.ProfileIdTo = @Id;  
+
+	SET @IsSentNotification =
+    CASE
+		WHEN @SenderProfileId = @Id THEN 0
+        WHEN NOT EXISTS (
+            SELECT 1
+            FROM Notifications WITH (NOLOCK)
+            WHERE SenderProfileId = @SenderProfileId
+                AND ReceiverProfileId = @Id
+                AND NotificationType = 'PROFILE_VIEW'
+                AND IsRead = 0
+                AND CreatedOn >= CAST(GETDATE() AS DATE)
+                AND CreatedOn < DATEADD(DAY, 1, CAST(GETDATE() AS DATE))
+        )
+        THEN 1  -- Send notification
+        ELSE 0  -- Already sent today
+    END
+  
+    -- Main Profile डेटा    
+    SELECT *,  
+	(SELECT TOP 1 Email FROM AspNetUsers WHERE Id = UserId) AS Email,
+	dbo.GetFullFilePath(ProfileFilePath) AS ProfileFilePath, 
+	dbo.GetFullFilePath(AadhaarFilePath1) AS AadhaarFilePath1,
+	dbo.GetFullFilePath(AadhaarFilePath2) AS AadhaarFilePath2, 
+	ISNULL(@RequestStatus,'No Request') As RequestStatus,
+	@IsSentNotification AS IsSentNotification
+	FROM MatrimonyProfiles     
+	WHERE Id = @Id;    
+    
+    -- Profile Photos  
+	SELECT 
+		Id,
+		Id AS ProfileId,
+		dbo.GetFullFilePath(ProfileFilePath) AS PhotoPath, 
+		0 AS SortOrder
+	FROM MatrimonyProfiles
+	WHERE Id = @Id
+	AND ISNULL(ProfileFilePath, '') <> ''
+	 
+	UNION ALL
+
+    SELECT     
+        Id,    
+        ProfileId,    
+        dbo.GetFullFilePath(PhotoPath) AS PhotoPath,    
+        SortOrder    
+    FROM MatrimonyProfilePhotos    
+    WHERE ProfileId = @Id    
+    ORDER BY SortOrder    
+    
+    -- Profile Siblings    
+    SELECT     
+        Id,    
+        ProfileId,    
+        Name,    
+        Relation,    
+        Type    
+    From [dbo].[MatrimonyProfileSiblings]    
+    WHERE ProfileId = @Id    
+    
+END  
+GO

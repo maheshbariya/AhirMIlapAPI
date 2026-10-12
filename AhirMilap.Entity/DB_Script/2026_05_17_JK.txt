@@ -1,0 +1,342 @@
+
+alter table MatrimonyProfiles
+add ProfileCode nvarchar(50) 
+
+GO
+
+ --generate profile code for existing rows
+	;WITH CTE AS
+(
+    SELECT 
+        Id,
+        ProfileCode,
+        ROW_NUMBER() OVER (ORDER BY createdon) AS RowNum
+    FROM MatrimonyProfiles
+)
+UPDATE CTE
+SET ProfileCode = 
+    'AM' + RIGHT('0000000' + CAST(RowNum AS VARCHAR(7)), 7);
+	
+go
+
+  
+CREATE or alter  PROCEDURE [dbo].[usp_AddMatrimonyProfile]  
+(  
+    @Id UNIQUEIDENTIFIER = NULL,  
+    @UserId NVARCHAR(450),  
+    @PageFlag NVARCHAR(50),  
+    -- Personal Identity  
+    @ProfileFor NVARCHAR(50) = NULL,  
+    -- Basic Details  
+    @FirstName NVARCHAR(100) = NULL,  
+    @LastName NVARCHAR(100) = NULL,  
+    @Gender NVARCHAR(20) = NULL,  
+    @DOB DATETIME = NULL,  
+    @Age INT = NULL,  
+    @MaritalStatus NVARCHAR(50) = NULL,  
+ @State NVARCHAR(100) = NULL,  
+ @District NVARCHAR(100) = NULL,  
+ @AboutMe NVARCHAR(500) = NULL,  
+    -- Religion  
+    @Religion NVARCHAR(100) = NULL,  
+    @Caste NVARCHAR(100) = NULL,  
+    @SubCaste NVARCHAR(100) = NULL,  
+    @LanguagesKnown NVARCHAR(500) = NULL,  
+    -- Upload  
+    @AadhaarFilePath1 NVARCHAR(500) = NULL,  
+ @AadhaarFilePath2 NVARCHAR(500) = NULL,  
+    @ProfilePhoto NVARCHAR(MAX) = NULL,  
+    -- Education  
+    @HighestEducation NVARCHAR(150) = NULL,  
+    @CollegeUniversity NVARCHAR(250) = NULL,  
+    @Occupation NVARCHAR(150) = NULL,  
+    @CompanyName NVARCHAR(200) = NULL,  
+    @AnnualIncome DECIMAL(18,2) = NULL,  
+    -- Lifestyle  
+    @HeightCm DECIMAL(18,2) = NULL,  
+    @WeightKg DECIMAL(18,2) = NULL,  
+    @Complexion NVARCHAR(50) = NULL,  
+    @PhysicalDisability NVARCHAR(50) = NULL,  
+    @DisabilityDetails NVARCHAR(500) = NULL,  
+    -- Family  
+    @FatherName NVARCHAR(100) = NULL,  
+    @FatherOccupation NVARCHAR(100) = NULL,  
+    @MotherName NVARCHAR(100) = NULL,  
+    @MotherOccupation NVARCHAR(100) = NULL,  
+    @FamilyType NVARCHAR(50) = NULL,  
+    @SiblingsJson NVARCHAR(MAX) = NULL,  
+ -- Common  
+    @CreatedBy NVARCHAR(450),  
+    @CreatedOn DATETIME  
+)  
+AS  
+BEGIN  
+    SET NOCOUNT ON;  
+  
+ SET @Id = (SELECT TOP 1 Id FROM MatrimonyProfiles WHERE UserId = @UserId)  
+  
+    IF(@Id IS NULL)  
+    BEGIN  
+        SET @Id = NEWID();  
+		DECLARE @ProfileCode NVARCHAR(50);
+		SET @ProfileCode = (SELECT   
+		  CONCAT('AM', FORMAT(  
+			ISNULL(MAX(CAST(SUBSTRING(ProfileCode, 3, LEN(ProfileCode) - 2) AS INT)), 0) + 1,   
+		  '0000000')) AS ProfileCode   
+		FROM MatrimonyProfiles WITH(NOLOCK))
+  
+        INSERT INTO MatrimonyProfiles  
+        (  
+            Id,  
+            UserId,  
+            CreatedBy,  
+            CreatedOn,
+			ProfileCode
+        )  
+        VALUES  
+        (  
+            @Id,  
+            @UserId,  
+            @CreatedBy,  
+            @CreatedOn,
+			@ProfileCode
+        );  
+    END   
+  
+    IF(@PageFlag = 'Basic')  
+    BEGIN  
+  UPDATE AspNetUsers  
+  SET FirstName = @FirstName,  
+   LastName = @LastName,  
+   UpdatedBy = @CreatedBy,  
+   UpdatedOn = @CreatedOn  
+  WHERE Id = @UserId  
+  
+        UPDATE MatrimonyProfiles  
+        SET ProfileStep = 1,  
+   ProfileFor = @ProfileFor,  
+   FirstName = @FirstName,  
+            LastName = @LastName,  
+            Gender = @Gender,  
+            DOB = @DOB,  
+            Age = @Age,  
+            MaritalStatus = @MaritalStatus,  
+   State = @State,  
+   District = @District,
+   AboutMe = @AboutMe
+        WHERE Id = @Id  
+    END   
+  
+    ELSE IF(@PageFlag = 'Religion')  
+    BEGIN  
+        UPDATE MatrimonyProfiles  
+        SET  
+   ProfileStep = 2,  
+            Religion = @Religion,  
+            Caste = @Caste,  
+            SubCaste = @SubCaste,  
+            LanguagesKnown = @LanguagesKnown,  
+   AadhaarFilePath1 = @AadhaarFilePath1,  
+   AadhaarFilePath2 = @AadhaarFilePath2  
+        WHERE Id = @Id  
+    END  
+  
+    ELSE IF(@PageFlag = 'Profile')  
+    BEGIN  
+   -- Old child photos delete  
+  DELETE FROM MatrimonyProfilePhotos  
+  WHERE ProfileId = @Id;  
+  
+  DECLARE @Table TABLE  
+  (  
+   RowNo INT IDENTITY(1,1),  
+   PhotoPath NVARCHAR(500)  
+  );  
+  
+  INSERT INTO @Table(PhotoPath)  
+  SELECT value  
+  FROM STRING_SPLIT(@ProfilePhoto, ',')  
+  WHERE LTRIM(RTRIM(value)) <> '';  
+  
+  -- First photo update in main table  
+  UPDATE MatrimonyProfiles  
+  SET   
+   ProfileStep = 3,  
+   ProfileFilePath =  
+   (  
+    SELECT TOP 1 PhotoPath  
+    FROM @Table  
+    ORDER BY RowNo  
+   )  
+  WHERE Id = @Id;  
+  
+  -- Insert all photos  
+  INSERT INTO MatrimonyProfilePhotos  
+  (  
+   Id,  
+   ProfileId,  
+   PhotoPath,  
+   SortOrder,  
+   CreatedBy,  
+   CreatedOn  
+  )  
+  SELECT  
+   NEWID(),  
+   @Id,  
+   PhotoPath,  
+   RowNo - 1,  
+   @CreatedBy,  
+   @CreatedOn  
+  FROM @Table  
+  WHERE RowNo > 1  
+  ORDER BY RowNo  
+    END  
+    
+    ELSE IF(@PageFlag = 'Education')  
+    BEGIN  
+        UPDATE MatrimonyProfiles  
+        SET  
+   ProfileStep = 4,  
+            HighestEducation = @HighestEducation,  
+            CollegeUniversity = @CollegeUniversity,  
+            Occupation = @Occupation,  
+            CompanyName = @CompanyName,  
+            AnnualIncome = @AnnualIncome  
+        WHERE Id = @Id  
+    END  
+    
+    ELSE IF(@PageFlag = 'Lifestyle')  
+    BEGIN  
+        UPDATE MatrimonyProfiles  
+        SET  
+   ProfileStep = 5,  
+            HeightCm = @HeightCm,  
+            WeightKg = @WeightKg,  
+            Complexion = @Complexion,  
+            PhysicalDisability = @PhysicalDisability,  
+            DisabilityDetails = @DisabilityDetails  
+        WHERE Id = @Id  
+    END  
+    
+    ELSE IF(@PageFlag = 'Family')  
+    BEGIN  
+        UPDATE MatrimonyProfiles  
+        SET  
+   ProfileStep = 6,  
+            FatherName = @FatherName,  
+            FatherOccupation = @FatherOccupation,  
+            MotherName = @MotherName,  
+            MotherOccupation = @MotherOccupation,  
+            FamilyType = @FamilyType  
+        WHERE Id = @Id  
+    END   
+  
+    UPDATE MatrimonyProfiles  
+    SET  
+        UpdatedBy = @CreatedBy,  
+        UpdatedOn = @CreatedOn  
+    WHERE Id = @Id  
+   
+    -- Delete old siblings  
+    DELETE FROM MatrimonyProfileSiblings  
+    WHERE ProfileId = @Id;  
+  
+    -- Insert new siblings  
+    IF(@SiblingsJson IS NOT NULL AND @SiblingsJson <> '')  
+    BEGIN  
+        INSERT INTO MatrimonyProfileSiblings  
+        (  
+            Id,  
+            ProfileId,  
+            Name,  
+            Relation,  
+            Type  
+        )  
+        SELECT  
+            NEWID(),  
+            @Id,  
+            Name,  
+            Relation,  
+            Type  
+        FROM OPENJSON(@SiblingsJson)  
+        WITH  
+        (  
+            Name NVARCHAR(100) '$.Name',  
+            Relation NVARCHAR(50) '$.Relation',  
+            Type NVARCHAR(50) '$.Type'  
+        );  
+    END  
+    
+    -- Get Profile   
+    SELECT TOP 1 * FROM MatrimonyProfiles WHERE Id = @Id  
+   
+    -- Profile Photos   
+ SELECT   
+        Id,  
+        ProfileId,  
+        PhotoPath,  
+        SortOrder  
+    FROM MatrimonyProfilePhotos  
+    WHERE ProfileId = @Id  
+    ORDER BY SortOrder  
+  
+    -- Get Siblings  
+    SELECT  
+    Id,  
+    ProfileId,  
+    Name,  
+    Relation,  
+    Type  
+    FROM MatrimonyProfileSiblings  
+    WHERE ProfileId = @Id;  
+  
+END  
+GO
+
+CREATE or alter  PROCEDURE [dbo].[usp_GetMatrimonyProfile]  
+(  
+    @UserId  NVARCHAR(450)  
+)  
+AS  
+BEGIN  
+    SET NOCOUNT ON;  
+  
+    DECLARE @Id UNIQUEIDENTIFIER;   
+  
+    SELECT @Id = Id  
+    FROM MatrimonyProfiles  
+    WHERE UserId = @UserId;  
+  
+    -- Main Profile डेटा  
+    SELECT *,
+	(SELECT TOP 1 Email FROM AspNetUsers WHERE Id = @UserId) AS Email
+	FROM MatrimonyProfiles   
+    WHERE Id = @Id;  
+  
+    -- Profile Photos   
+    SELECT   
+        Id,  
+        ProfileId,  
+        PhotoPath,  
+        SortOrder  
+    FROM MatrimonyProfilePhotos  
+    WHERE ProfileId = @Id  
+    ORDER BY SortOrder  
+  
+    -- Profile Siblings  
+  
+    Select   
+        Id,  
+        ProfileId,  
+        Name,  
+        Relation,  
+        Type  
+    From [dbo].[MatrimonyProfileSiblings]  
+    WHERE ProfileId = @Id  
+  
+END
+go
+
+	alter table MatrimonyProfiles
+	add AboutMe nvarchar(500)
+	GO

@@ -1,0 +1,21 @@
+CREATE or alter PROCEDURE [dbo].[usp_GetMyChatUnReadCount]
+(
+    @ProfileId UNIQUEIDENTIFIER
+)
+AS
+-- [dbo].[usp_GetMyChatUnReadCount] '6ea99c8c-bc07-4dbf-9a0f-3e4562e3d8b9'
+BEGIN
+    SET NOCOUNT ON;
+
+	 SELECT COUNT(DISTINCT m.ChatRoomId) AS UnreadConversationCount
+    FROM Messages m
+    INNER JOIN ChatRooms cr
+        ON cr.Id = m.ChatRoomId
+    WHERE
+        m.IsRead = 0
+        AND m.SenderProfileId <> @ProfileId
+        AND (
+                cr.Profile1Id = @ProfileId
+                OR cr.Profile2Id = @ProfileId
+            );
+END

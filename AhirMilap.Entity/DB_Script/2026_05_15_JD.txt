@@ -1,0 +1,95 @@
+ALTER TABLE [dbo].[ReportUser]
+ADD Comments NVARCHAR(1000);
+GO
+
+CREATE OR ALTER PROCEDURE [dbo].[usp_AddReportUser]
+@ProfileIdFrom uniqueidentifier,
+@ProfileIdTo uniqueidentifier,
+@Reason nvarchar(500),
+@Comments nvarchar(1000),
+@CreatedOn datetime,
+@CreatedBy nvarchar(450)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @Id UNIQUEIDENTIFIER;
+
+    -- Get existing favorite Id
+    SELECT @Id = Id
+    FROM ReportUser
+    WHERE ProfileIdFrom = @ProfileIdFrom
+      AND ProfileIdTo = @ProfileIdTo;
+
+    -- If exists then delete
+    IF (@Id IS NOT NULL)
+    BEGIN
+        DELETE FROM ReportUser WHERE Id = @Id;
+        SELECT 'clearReport' AS CreatedBy
+        RETURN;
+    END
+
+    -- Insert new favorite
+    SET @Id = NEWID();
+
+    INSERT INTO ReportUser
+    (
+        Id,
+        ProfileIdFrom,
+        ProfileIdTo,
+        Reason,
+        Comments,
+        CreatedBy,
+        CreatedOn
+    )
+    VALUES
+    (
+        @Id,
+        @ProfileIdFrom,
+        @ProfileIdTo,
+        @Reason,
+        @Comments,
+        @CreatedBy,
+        @CreatedOn
+    );
+
+    -- Return inserted record
+    SELECT * FROM ReportUser WHERE Id = @Id;
+END
+GO
+CREATE OR ALTER PROCEDURE [dbo].[usp_DeleteReportUserById]
+@Id UNIQUEIDENTIFIER
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF EXISTS(SELECT 1 FROM ReportUser WHERE Id = @Id)
+    BEGIN
+        DELETE FROM ReportUser WHERE Id = @Id;
+        SELECT 1 AS Success;
+    END
+    ELSE
+    BEGIN
+       SELECT 0 AS Success;
+    END 
+END
+GO
+
+CREATE OR ALTER PROCEDURE [dbo].[usp_GetReportUsers]
+@ProfileFromId uniqueidentifier,
+@UserId NVARCHAR(450)
+AS
+/*
+usp_GetReportUsers '6EA99C8C-BC07-4DBF-9A0F-3E4562E3D8B9','75CFA3DC-EF7D-4F68-AF6B-1E38F41A13CA'
+*/
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT F.Id,F.ProfileIdTo,CONCAT(M.FirstName,' ',M.LastName) AS FullName,Reason,Comments,
+	dbo.GetFullFilePath(M.ProfileFilePath) AS ProfileFilePath,M.Occupation,F.CreatedOn
+    FROM ReportUser F
+	INNER JOIN MatrimonyProfiles M ON F.ProfileIdTo = M.Id
+    WHERE F.ProfileIdFrom = @ProfileFromId
+	ORDER BY CreatedOn DESC
+END
+ GO
